@@ -93,13 +93,18 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = finalUrl;
     }
 
-    // Redirect to Complete Plan directly
-    if (btnComprarCompleto) {
-        btnComprarCompleto.addEventListener('click', () => {
-            console.log('Comprar Completo clicked!');
-            redirectToCheckout('https://ggcheckout.app/checkout/v5/hly48H7XtwYLYbBIl4Qv');
-        });
-    }
+    // Decorate checkout links with UTMs on page load (so they have native links ready to go)
+    const checkoutLinks = [btnComprarCompleto, btnUpsellAccept, btnUpsellDecline];
+    checkoutLinks.forEach(link => {
+        if (link && link.tagName === 'A') {
+            const originalHref = link.getAttribute('href');
+            if (originalHref) {
+                const decoratedUrl = getCheckoutUrlWithUtms(originalHref);
+                link.setAttribute('href', decoratedUrl);
+                console.log(`Decorated link ${link.id}:`, decoratedUrl);
+            }
+        }
+    });
 
     // Modal Action: Close
     const closeUpsell = () => {
@@ -108,24 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (btnCloseUpsell) btnCloseUpsell.addEventListener('click', closeUpsell);
-    if (btnUpsellDecline) btnUpsellDecline.addEventListener('click', () => {
-        console.log('Upsell Declined! Redirecting to Basic...');
-        closeUpsell();
-        redirectToCheckout('https://ggcheckout.app/checkout/v5/a7XwInaqHfOL0GBTxD7D');
-    });
-
-    // Modal Action: Accept Upsell
-    if (btnUpsellAccept) {
-        btnUpsellAccept.addEventListener('click', () => {
-            console.log('Upsell Accepted! Redirecting to Discount Complete...');
-            closeUpsell();
-            redirectToCheckout('https://ggcheckout.app/checkout/v5/2ZKfSetPF3rOdy4s3Jfv');
-        });
-    }
-
-    // Close Modal on clicking outside the modal content
+    
+    // Close Modal on clicking outside the modal content or clicking upsell choices (helps smooth transition)
     window.addEventListener('click', (e) => {
-        if (e.target === upsellModal) {
+        if (e.target === upsellModal || e.target === btnUpsellAccept || e.target === btnUpsellDecline) {
             closeUpsell();
         }
     });
