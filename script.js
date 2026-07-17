@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    /* ==========================================================================
+    // ==========================================================================
     // Global functions are now defined at the top level outside DOMContentLoaded to ensure they are immediately available.
 
     function simulateCheckout(planName, price) {
@@ -154,9 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(message);
     }
 
-    /* ==========================================================================
-       DYNAMIC COUNTDOWN TIMER (EVERGREEN & PERSISTENT)
-       ========================================================================== */
+    // ==========================================================================
+    // DYNAMIC COUNTDOWN TIMER (EVERGREEN & PERSISTENT)
+    // ==========================================================================
     const hoursVal = document.getElementById('hours');
     const minutesVal = document.getElementById('minutes');
     const secondsVal = document.getElementById('seconds');
