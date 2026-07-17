@@ -88,12 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function redirectToCheckout(url) {
-        window.location.href = getCheckoutUrlWithUtms(url);
+        const finalUrl = getCheckoutUrlWithUtms(url);
+        console.log('Redirecting to checkout:', finalUrl);
+        window.location.href = finalUrl;
     }
 
     // Redirect to Complete Plan directly
     if (btnComprarCompleto) {
         btnComprarCompleto.addEventListener('click', () => {
+            console.log('Comprar Completo clicked!');
             redirectToCheckout('https://ggcheckout.app/checkout/v5/hly48H7XtwYLYbBIl4Qv');
         });
     }
@@ -106,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnCloseUpsell) btnCloseUpsell.addEventListener('click', closeUpsell);
     if (btnUpsellDecline) btnUpsellDecline.addEventListener('click', () => {
+        console.log('Upsell Declined! Redirecting to Basic...');
         closeUpsell();
         redirectToCheckout('https://ggcheckout.app/checkout/v5/a7XwInaqHfOL0GBTxD7D');
     });
@@ -113,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modal Action: Accept Upsell
     if (btnUpsellAccept) {
         btnUpsellAccept.addEventListener('click', () => {
+            console.log('Upsell Accepted! Redirecting to Discount Complete...');
             closeUpsell();
             redirectToCheckout('https://ggcheckout.app/checkout/v5/2ZKfSetPF3rOdy4s3Jfv');
         });
