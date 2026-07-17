@@ -83,29 +83,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Helper function to append UTM parameters to checkout URLs
-    function getCheckoutUrlWithUtms(baseUrl) {
-        let queryString = window.location.search;
-        
-        // Fallback to localStorage if no parameters in URL
-        if (!queryString || !queryString.includes('utm_')) {
-            const utms = [];
-            const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'src', 'sck'];
-            keys.forEach(key => {
-                const val = safeGetItem(key) || safeGetItem(`utmify_${key}`);
-                if (val) {
-                    utms.push(`${key}=${encodeURIComponent(val)}`);
+    const trackingKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'src', 'sck'];
+
+    // Capture UTM parameters from current URL and store them in localStorage
+    function captureAndStoreUtms() {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            trackingKeys.forEach(key => {
+                const value = urlParams.get(key);
+                if (value) {
+                    safeSetItem(key, value);
+                    safeSetItem(`utmify_${key}`, value);
                 }
             });
-            if (utms.length > 0) {
-                queryString = '?' + utms.join('&');
-            }
+        } catch (e) {
+            console.error('Error capturing UTMs:', e);
         }
-        
-        if (!queryString) return baseUrl;
-        const separator = baseUrl.includes('?') ? '&' : '?';
-        const cleanParams = queryString.startsWith('?') ? queryString.substring(1) : queryString;
-        return `${baseUrl}${separator}${cleanParams}`;
+    }
+    captureAndStoreUtms();
+
+    // Helper function to append UTM parameters to checkout URLs
+    function getCheckoutUrlWithUtms(baseUrl) {
+        try {
+            const urlObj = new URL(baseUrl, window.location.origin);
+            const trackingParams = {};
+
+            // 1. Load from localStorage (lowest priority)
+            trackingKeys.forEach(key => {
+                const val = safeGetItem(key) || safeGetItem(`utmify_${key}`);
+                if (val) {
+                    trackingParams[key] = val;
+                }
+            });
+
+            // 2. Load from current URL query string (medium priority, overrides localStorage)
+            const currentUrlParams = new URLSearchParams(window.location.search);
+            trackingKeys.forEach(key => {
+                const val = currentUrlParams.get(key);
+                if (val) {
+                    trackingParams[key] = val;
+                }
+            });
+
+            // 3. Load from target checkout URL query string (highest priority)
+            trackingKeys.forEach(key => {
+                if (urlObj.searchParams.has(key)) {
+                    trackingParams[key] = urlObj.searchParams.get(key);
+                }
+            });
+
+            // Set all collected tracking parameters on the target URL
+            Object.keys(trackingParams).forEach(key => {
+                urlObj.searchParams.set(key, trackingParams[key]);
+            });
+
+            return urlObj.toString();
+        } catch (e) {
+            console.error('Error decorating URL with UTMs:', e);
+            return baseUrl;
+        }
     }
 
     function redirectToCheckout(url) {
@@ -114,15 +150,28 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = finalUrl;
     }
 
-    // Decorate checkout links with UTMs on page load (so they have native links ready to go)
+    // Decorate checkout links with UTMs on page load and dynamically on interaction (to capture late-loaded UTMs)
     const checkoutLinks = [btnComprarCompleto, btnUpsellAccept, btnUpsellDecline];
     checkoutLinks.forEach(link => {
         if (link && link.tagName === 'A') {
             const originalHref = link.getAttribute('href');
             if (originalHref) {
+                link.setAttribute('data-original-href', originalHref);
+                
+                // Decorate immediately on page load
                 const decoratedUrl = getCheckoutUrlWithUtms(originalHref);
                 link.setAttribute('href', decoratedUrl);
                 console.log(`Decorated link ${link.id}:`, decoratedUrl);
+
+                // Update dynamically on interaction/click to capture late-loaded parameters from async scripts
+                const updateLink = () => {
+                    const base = link.getAttribute('data-original-href') || originalHref;
+                    const latestDecoratedUrl = getCheckoutUrlWithUtms(base);
+                    link.setAttribute('href', latestDecoratedUrl);
+                };
+                link.addEventListener('click', updateLink);
+                link.addEventListener('mousedown', updateLink);
+                link.addEventListener('touchstart', updateLink, { passive: true });
             }
         }
     });
