@@ -1,3 +1,24 @@
+// Global Lightbox Functions (defined at top level so they are available immediately)
+window.openLightbox = (imgUrl) => {
+    const lightboxModal = document.getElementById('lightbox-modal');
+    const fullImg = document.getElementById('lightbox-full-img');
+    if (fullImg) {
+        fullImg.src = imgUrl;
+    }
+    if (lightboxModal) {
+        lightboxModal.classList.add('open');
+    }
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeLightbox = () => {
+    const lightboxModal = document.getElementById('lightbox-modal');
+    if (lightboxModal) {
+        lightboxModal.classList.remove('open');
+    }
+    document.body.style.overflow = '';
+};
+
 // Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     
@@ -122,40 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     /* ==========================================================================
-       LIGHTBOX / CASE DETAILS MODAL
-       ========================================================================== */
-    const lightboxModal = document.getElementById('lightbox-modal');
-    const btnCloseLightbox = document.getElementById('btn-close-lightbox');
-    
-    const lightboxCaseId = document.getElementById('lightbox-case-id');
-    const lightboxCaseTitle = document.getElementById('lightbox-case-title');
-    const lightboxCaseDesc = document.getElementById('lightbox-case-desc');
-    const lightboxSimBg = document.getElementById('lightbox-case-sim-bg');
-    const lightboxPointer = document.getElementById('lightbox-case-pointer');
-    const lightboxCallout = document.getElementById('lightbox-case-callout');
-
-    // Global function to be called from inline onclick events
-    window.openLightbox = (imgUrl) => {
-        const fullImg = document.getElementById('lightbox-full-img');
-        if (fullImg) {
-            fullImg.src = imgUrl;
-        }
-        lightboxModal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-    };
-
-    const closeLightbox = () => {
-        lightboxModal.classList.remove('open');
-        document.body.style.overflow = '';
-    };
-
-    if (btnCloseLightbox) btnCloseLightbox.addEventListener('click', closeLightbox);
-    
-    window.addEventListener('click', (e) => {
-        if (e.target === lightboxModal) {
-            closeLightbox();
-        }
-    });
+    // Global functions are now defined at the top level outside DOMContentLoaded to ensure they are immediately available.
 
     function simulateCheckout(planName, price) {
         // Log to console for debugging/verification
@@ -293,23 +281,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 2500);
         }
     }
-
-    // Monitora o foco da janela: muitas ferramentas de print tiram o foco momentaneamente ou dependem de mudança de visibilidade
-    window.addEventListener('blur', () => {
-        // Se o usuário sair da página para usar ferramenta de captura, podemos colocar uma tela preta rápida
-        if (printShield) {
-            printShield.style.display = 'block';
-        }
-    });
-
-    window.addEventListener('focus', () => {
-        if (printShield) {
-            // Remove o blackout com um pequeno delay após a volta do foco
-            setTimeout(() => {
-                printShield.style.display = 'none';
-            }, 300);
-        }
-    });
-
 
 });
