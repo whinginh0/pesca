@@ -807,7 +807,7 @@
                                     <span>Sem Bônus 4: Kit de Conservação</span>
                                 </li>
                             </ul>
-                            <div class="btn btn-plan-select" id="btn-abrir-popup-basico" style="cursor: pointer; user-select: none;">
+                            <div class="btn btn-plan-select" id="btn-abrir-popup-basico" onclick="document.getElementById('upsell-modal').classList.add('open'); document.body.style.overflow = 'hidden';" style="cursor: pointer; user-select: none;">
                                 <span>Quero Garantir o Básico</span>
                             </div>
                             <div class="plan-security-note">
@@ -1080,7 +1080,7 @@
     <!-- POP-UP DE UPSELL (OFERTA EXCLUSIVA DO PLANO COMPLETO) -->
     <div class="upsell-modal-overlay" id="upsell-modal">
         <div class="upsell-modal-content">
-            <button class="close-modal" id="btn-close-upsell" aria-label="Fechar modal">
+            <button class="close-modal" id="btn-close-upsell" onclick="document.getElementById('upsell-modal').classList.remove('open'); document.body.style.overflow = '';" aria-label="Fechar modal">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                         stroke-linejoin="round" />
@@ -1108,10 +1108,10 @@
             </div>
 
             <div class="upsell-buttons">
-                <a href="https://ggcheckout.app/checkout/v5/2ZKfSetPF3rOdy4s3Jfv" class="btn btn-cta btn-upsell-accept" id="btn-upsell-accept">
+                <a href="https://ggcheckout.app/checkout/v5/2ZKfSetPF3rOdy4s3Jfv" onclick="document.getElementById('upsell-modal').classList.remove('open'); document.body.style.overflow = '';" class="btn btn-cta btn-upsell-accept" id="btn-upsell-accept">
                     <span>Quero o Completo com Desconto (R$ 17,90)</span>
                 </a>
-                <a href="https://ggcheckout.app/checkout/v5/a7XwInaqHfOL0GBTxD7D" class="btn-upsell-decline" id="btn-upsell-decline">
+                <a href="https://ggcheckout.app/checkout/v5/a7XwInaqHfOL0GBTxD7D" onclick="document.getElementById('upsell-modal').classList.remove('open'); document.body.style.overflow = '';" class="btn-upsell-decline" id="btn-upsell-decline">
                     Não, quero continuar com o básico por R$ 10,00
                 </a>
             </div>
