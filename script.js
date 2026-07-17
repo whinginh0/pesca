@@ -1,6 +1,23 @@
 // Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', () => {
     
+    // Safe localStorage access (avoids crash when cookies/localStorage are blocked or in private/incognito mode)
+    function safeGetItem(key) {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function safeSetItem(key, value) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            // Do nothing
+        }
+    }
+    
     /* ==========================================================================
        FAQ ACCORDION INTERACTIVITY
        ========================================================================== */
@@ -54,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const utms = [];
             const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'src', 'sck'];
             keys.forEach(key => {
-                const val = localStorage.getItem(key) || localStorage.getItem(`utmify_${key}`);
+                const val = safeGetItem(key) || safeGetItem(`utmify_${key}`);
                 if (val) {
                     utms.push(`${key}=${encodeURIComponent(val)}`);
                 }
@@ -167,12 +184,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((hoursVal && minutesVal && secondsVal) || (sHoursVal && sMinutesVal && sSecondsVal)) {
         const timerDurationSeconds = (76 * 60) + 2; // 1h 16m 02s = 4562s
         
-        let deadline = localStorage.getItem('pricing_countdown_deadline');
+        let deadline = safeGetItem('pricing_countdown_deadline');
         
         // If deadline is not set or is corrupted, set a new one
         if (!deadline || isNaN(parseInt(deadline))) {
             const newDeadline = new Date().getTime() + (timerDurationSeconds * 1000);
-            localStorage.setItem('pricing_countdown_deadline', newDeadline.toString());
+            safeSetItem('pricing_countdown_deadline', newDeadline.toString());
             deadline = newDeadline;
         } else {
             deadline = parseInt(deadline);
@@ -185,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reset deadline if it has expired
             if (remaining <= 0) {
                 const newDeadline = now + (timerDurationSeconds * 1000);
-                localStorage.setItem('pricing_countdown_deadline', newDeadline.toString());
+                safeSetItem('pricing_countdown_deadline', newDeadline.toString());
                 deadline = newDeadline;
                 remaining = timerDurationSeconds * 1000;
             }
