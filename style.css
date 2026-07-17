@@ -1324,14 +1324,14 @@ button {
     height: 0.95rem;
 }
 
-#plano-basico #btn-comprar-basico {
+#plano-basico #btn-abrir-popup-basico {
     font-size: 0.85rem;
     padding: 0.75rem;
     border: 1px solid rgba(7, 101, 135, 0.35);
     color: rgba(7, 101, 135, 0.8);
 }
 
-#plano-basico #btn-comprar-basico:hover {
+#plano-basico #btn-abrir-popup-basico:hover {
     background-color: var(--color-brown-medium);
     color: #ffffff;
     border-color: var(--color-brown-medium);

@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ==========================================================================
        UPSELL POPUP LOGIC
        ========================================================================== */
-    const btnComprarBasico = document.getElementById('btn-comprar-basico');
+    const btnComprarBasico = document.getElementById('btn-abrir-popup-basico');
     const btnComprarCompleto = document.getElementById('btn-comprar-completo');
     
     const upsellModal = document.getElementById('upsell-modal');
