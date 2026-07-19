@@ -150,31 +150,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = finalUrl;
     }
 
-    // Decorate checkout links with UTMs on page load and dynamically on interaction (to capture late-loaded UTMs)
-    const checkoutLinks = [btnComprarCompleto, btnUpsellAccept, btnUpsellDecline];
-    checkoutLinks.forEach(link => {
-        if (link && link.tagName === 'A') {
-            const originalHref = link.getAttribute('href');
-            if (originalHref) {
-                link.setAttribute('data-original-href', originalHref);
-                
-                // Decorate immediately on page load
-                const decoratedUrl = getCheckoutUrlWithUtms(originalHref);
-                link.setAttribute('href', decoratedUrl);
-                console.log(`Decorated link ${link.id}:`, decoratedUrl);
-
-                // Update dynamically on interaction/click to capture late-loaded parameters from async scripts
-                const updateLink = () => {
-                    const base = link.getAttribute('data-original-href') || originalHref;
-                    const latestDecoratedUrl = getCheckoutUrlWithUtms(base);
-                    link.setAttribute('href', latestDecoratedUrl);
-                };
-                link.addEventListener('click', updateLink);
-                link.addEventListener('mousedown', updateLink);
-                link.addEventListener('touchstart', updateLink, { passive: true });
-            }
-        }
-    });
+    // Redirect to Complete Plan directly
+    if (btnComprarCompleto) {
+        btnComprarCompleto.addEventListener('click', () => {
+            redirectToCheckout('https://ggcheckout.app/checkout/v5/hly48H7XtwYLYbBIl4Qv');
+        });
+    }
 
     // Modal Action: Close
     const closeUpsell = () => {
@@ -183,10 +164,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (btnCloseUpsell) btnCloseUpsell.addEventListener('click', closeUpsell);
-    
-    // Close Modal on clicking outside the modal content or clicking upsell choices (helps smooth transition)
+    if (btnUpsellDecline) btnUpsellDecline.addEventListener('click', () => {
+        closeUpsell();
+        redirectToCheckout('https://ggcheckout.app/checkout/v5/a7XwInaqHfOL0GBTxD7D');
+    });
+
+    // Modal Action: Accept Upsell
+    if (btnUpsellAccept) {
+        btnUpsellAccept.addEventListener('click', () => {
+            closeUpsell();
+            redirectToCheckout('https://ggcheckout.app/checkout/v5/2ZKfSetPF3rOdy4s3Jfv');
+        });
+    }
+
+    // Close Modal on clicking outside the modal content
     window.addEventListener('click', (e) => {
-        if (e.target === upsellModal || e.target === btnUpsellAccept || e.target === btnUpsellDecline) {
+        if (e.target === upsellModal) {
             closeUpsell();
         }
     });
